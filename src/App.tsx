@@ -95,7 +95,11 @@ function App() {
 
           <div className="form-group">
             <label htmlFor="storyPoints">Story Points (Effort 1-20):</label>
-            <input id="storyPoints" {...register("storyPoints")} />
+            <input
+              id="storyPoints"
+              type="number"
+              {...register("storyPoints")}
+            />
             {errors.storyPoints && (
               <span className="error">{errors.storyPoints.message}</span>
             )}
@@ -111,9 +115,7 @@ function App() {
 
           <div className="form-group">
             <label htmlFor="dueDate">Due Date:</label>
-            <input id="dueDate" {...register("dueDate")} />
-            {/* PENDING! NEED TO CHANGE TO CALENDAR */}
-
+            <input id="dueDate" type="date" {...register("dueDate")} />
             {errors.dueDate && (
               <span className="error">{errors.dueDate.message}</span>
             )}
@@ -156,21 +158,23 @@ function App() {
                   <h3>{task.taskName}</h3>
                   <p>
                     Priority:
-                    <span className={`priority-${task.priority.toLowerCase()}`}>
-                      {task.priority}
+                    <span
+                      className={`priority-${task.priority.toLowerCase()} task-info`}
+                    >
+                      <span className="task-info"> {task.priority}</span>
                     </span>
                   </p>
                   <p>
                     Story Points (Effort 1-20):
-                    {task.storyPoints}
+                    <span className="task-info"> {task.storyPoints}</span>
                   </p>
                   <p>
                     Assignee:
-                    {task.assignee}
+                    <span className="task-info"> {task.assignee}</span>
                   </p>
                   <p>
                     Due Date:
-                    {task.dueDate}
+                    <span className="task-info"> {task.dueDate}</span>
                   </p>
                 </div>
 
@@ -195,6 +199,7 @@ function App() {
           </ul>
         )}
       </div>
+      {/* END OF TASK LIST SECTION */}
     </div>
   );
 }
