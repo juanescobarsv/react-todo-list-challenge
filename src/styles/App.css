@@ -22,6 +22,16 @@ h2 {
   margin-bottom: 20px;
 }
 
+h1 {
+  font-size: 2.5rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 15px 20px;
+  background-color: #ffd84f;
+  border-radius: 8px;
+}
+
 .new-task-section,
 .task-list-section {
   margin-bottom: 40px;
@@ -311,8 +321,8 @@ button[type="submit"]:hover {
 
   .search-and-filter input[type="text"] {
     width: 100%;
-    margin-right: 0;
     margin-bottom: 5px;
+    box-sizing: border-box;
   }
 
   .search-and-filter .checkbox-label {
