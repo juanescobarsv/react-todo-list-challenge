@@ -28,6 +28,9 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showCompleted, setShowCompleted] = useState(false);
 
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [taskIdToDelete, setTaskIdToDelete] = useState<string | null>(null);
+
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }, [tasks]);
@@ -50,8 +53,23 @@ function App() {
     );
   };
 
-  const handleDeleteTask = (id: string) => {
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+  const openDeleteConfirmModal = (id: string) => {
+    setTaskIdToDelete(id);
+    setShowConfirmModal(true);
+  };
+
+  const closeDeleteConfirmModal = () => {
+    setTaskIdToDelete(null);
+    setShowConfirmModal(false);
+  };
+
+  const confirmDeleteTask = () => {
+    if (taskIdToDelete) {
+      setTasks((prevTasks) =>
+        prevTasks.filter((task) => task.id !== taskIdToDelete)
+      );
+      closeDeleteConfirmModal();
+    }
   };
 
   const filteredTasks = tasks.filter((task) => {
@@ -80,7 +98,7 @@ function App() {
           <div className="form-group">
             <label htmlFor="priority">Priority:</label>
             <select id="priority" {...register("priority")}>
-              <option value="" disabled>
+              <option value="" selected disabled>
                 Select Priority
               </option>
               <option value="Urgent">Urgent</option>
@@ -189,7 +207,7 @@ function App() {
                   </label>
                   <button
                     className="delete-button"
-                    onClick={() => handleDeleteTask(task.id)}
+                    onClick={() => openDeleteConfirmModal(task.id)}
                   >
                     Delete
                   </button>
@@ -200,6 +218,29 @@ function App() {
         )}
       </div>
       {/* END OF TASK LIST SECTION */}
+
+      {showConfirmModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Confirm Deletion</h3>
+            <p>Are you sure you want to delete this task?</p>
+            <div className="modal-actions">
+              <button
+                className="modal-button confirm"
+                onClick={confirmDeleteTask}
+              >
+                Yes, Delete
+              </button>
+              <button
+                className="modal-button cancel"
+                onClick={closeDeleteConfirmModal}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
