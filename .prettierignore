@@ -1,0 +1,14 @@
+# .prettierignore
+# Ignore artifacts:
+build
+dist
+node_modules
+coverage
+.env
+.DS_Store
+
+# Ignore specific files
+src/react-app-env.d.ts
+src/serviceWorkerRegistration.ts
+src/setupTests.ts
+src/reportWebVitals.ts
