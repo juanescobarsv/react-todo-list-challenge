@@ -1,12 +1,19 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { tasksSchema } from "./schema/tasksSchema";
 import type { TaskFormData } from "./schema/tasksSchema";
 
+import TaskForm from "./components/TaskForm";
+import TaskList from "./components/TaskList";
+import DeleteModal from "./components/DeleteModal";
 import "./styles/App.css";
+import "./styles/DeleteModal.css";
+import "./styles/TaskForm.css";
+import "./styles/TaskItem.css";
+import "./styles/TaskList.css";
 
-interface Task extends TaskFormData {
+export interface Task extends TaskFormData {
   id: string;
   completed: boolean;
 }
@@ -17,9 +24,7 @@ function App() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<TaskFormData>({
-    resolver: zodResolver(tasksSchema),
-  });
+  } = useForm<TaskFormData>({ resolver: zodResolver(tasksSchema) });
 
   const [tasks, setTasks] = useState<Task[]>(() => {
     const savedTasks = localStorage.getItem("tasks");
@@ -27,7 +32,6 @@ function App() {
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [showCompleted, setShowCompleted] = useState(false);
-
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [taskIdToDelete, setTaskIdToDelete] = useState<string | null>(null);
 
@@ -41,13 +45,13 @@ function App() {
       id: Date.now().toString(),
       completed: false,
     };
-    setTasks((prevTasks) => [...prevTasks, newTask]);
+    setTasks((prev) => [...prev, newTask]);
     reset();
   };
 
   const handleToggleComplete = (id: string) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
+    setTasks((prev) =>
+      prev.map((task) =>
         task.id === id ? { ...task, completed: !task.completed } : task
       )
     );
@@ -65,9 +69,7 @@ function App() {
 
   const confirmDeleteTask = () => {
     if (taskIdToDelete) {
-      setTasks((prevTasks) =>
-        prevTasks.filter((task) => task.id !== taskIdToDelete)
-      );
+      setTasks((prev) => prev.filter((task) => task.id !== taskIdToDelete));
       closeDeleteConfirmModal();
     }
   };
@@ -83,164 +85,26 @@ function App() {
   return (
     <div className="container">
       <h1>To Do List</h1>
-
-      <div className="new-task-section">
-        <h2>Add New Task</h2>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="form-group">
-            <label htmlFor="taskName">Task Name:</label>
-            <input id="taskName" {...register("taskName")} />
-            {errors.taskName && (
-              <span className="error">{errors.taskName.message}</span>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="priority">Priority:</label>
-            <select id="priority" {...register("priority")}>
-              <option value="" selected disabled>
-                Select Priority
-              </option>
-              <option value="Urgent">Urgent</option>
-              <option value="High">High</option>
-              <option value="Normal">Normal</option>
-              <option value="Low">Low</option>
-            </select>
-            {errors.priority && (
-              <span className="error">{errors.priority.message}</span>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="storyPoints">Story Points (Effort 1-20):</label>
-            <input
-              id="storyPoints"
-              type="number"
-              {...register("storyPoints")}
-            />
-            {errors.storyPoints && (
-              <span className="error">{errors.storyPoints.message}</span>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="assignee">Assignee:</label>
-            <input id="assignee" {...register("assignee")} />
-            {errors.assignee && (
-              <span className="error">{errors.assignee.message}</span>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="dueDate">Due Date:</label>
-            <input id="dueDate" type="date" {...register("dueDate")} />
-            {errors.dueDate && (
-              <span className="error">{errors.dueDate.message}</span>
-            )}
-          </div>
-
-          <button type="submit">Add Task</button>
-        </form>
-      </div>
-      {/* END OF NEW TASK SECTION */}
-
-      <div className="task-list-section">
-        <h2>Task List</h2>
-        <div className="search-and-filter">
-          <input
-            type="text"
-            placeholder="Search by name or assignee:"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              checked={showCompleted}
-              onChange={() => setShowCompleted(!showCompleted)}
-            />
-            Show Completed Tasks
-          </label>
-        </div>
-
-        {filteredTasks.length === 0 ? (
-          <p>No tasks found!</p>
-        ) : (
-          <ul className="task-list">
-            {filteredTasks.map((task) => (
-              <li
-                key={task.id}
-                className={`task-item ${task.completed ? "completed" : ""}`}
-              >
-                <div>
-                  <h3>{task.taskName}</h3>
-                  <p>
-                    Priority:
-                    <span
-                      className={`priority-${task.priority.toLowerCase()} task-info`}
-                    >
-                      <span className="task-info"> {task.priority}</span>
-                    </span>
-                  </p>
-                  <p>
-                    Story Points (Effort 1-20):
-                    <span className="task-info"> {task.storyPoints}</span>
-                  </p>
-                  <p>
-                    Assignee:
-                    <span className="task-info"> {task.assignee}</span>
-                  </p>
-                  <p>
-                    Due Date:
-                    <span className="task-info"> {task.dueDate}</span>
-                  </p>
-                </div>
-
-                <div className="task-actions">
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={task.completed}
-                      onChange={() => handleToggleComplete(task.id)}
-                    />
-                    Completed
-                  </label>
-                  <button
-                    className="delete-button"
-                    onClick={() => openDeleteConfirmModal(task.id)}
-                  >
-                    Delete
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-      {/* END OF TASK LIST SECTION */}
-
-      {showConfirmModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>Confirm Deletion</h3>
-            <p>Are you sure you want to delete this task?</p>
-            <div className="modal-actions">
-              <button
-                className="modal-button confirm"
-                onClick={confirmDeleteTask}
-              >
-                Yes, Delete
-              </button>
-              <button
-                className="modal-button cancel"
-                onClick={closeDeleteConfirmModal}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <TaskForm
+        onSubmit={onSubmit}
+        register={register}
+        errors={errors}
+        handleSubmit={handleSubmit}
+      />
+      <TaskList
+        tasks={filteredTasks}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        showCompleted={showCompleted}
+        setShowCompleted={setShowCompleted}
+        handleToggleComplete={handleToggleComplete}
+        openDeleteConfirmModal={openDeleteConfirmModal}
+      />
+      <DeleteModal
+        visible={showConfirmModal}
+        onConfirm={confirmDeleteTask}
+        onCancel={closeDeleteConfirmModal}
+      />
     </div>
   );
 }
