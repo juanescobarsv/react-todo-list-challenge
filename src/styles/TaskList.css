@@ -1,0 +1,45 @@
+.task-list {
+  list-style: none;
+  padding: 0;
+}
+
+.search-and-filter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #e9ecef;
+  border-radius: 5px;
+}
+
+.search-and-filter input[type="text"] {
+  flex-grow: 1;
+  padding: 8px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-right: 15px;
+}
+
+.search-and-filter .checkbox-label {
+  margin-left: auto;
+}
+
+@media (max-width: 500px) {
+  .search-and-filter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .search-and-filter input[type="text"] {
+    width: 100%;
+    margin-bottom: 5px;
+    box-sizing: border-box;
+  }
+
+  .search-and-filter .checkbox-label {
+    margin-left: 0;
+  }
+}
